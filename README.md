@@ -1,0 +1,3 @@
+# Prerequisites
+
+Globally installed typescript

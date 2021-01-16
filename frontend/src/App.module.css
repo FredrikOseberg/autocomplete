@@ -2,5 +2,35 @@
   height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center;
+  background-color: #f1f1f1;
+  padding: 1rem;
+}
+
+.autoCompleteContainer {
+  padding-top: 5rem;
+}
+
+.autoCompleteListItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border: 1px solid transparent;
+}
+
+.autoCompleteListItem:focus {
+  border: 1px solid blue;
+}
+
+.autoCompleteListItemStreet {
+  margin-right: 15px;
+  width: 50%;
+}
+
+.autoCompleteListItemPostNumber {
+  margin-right: 15px;
+  width: 10%;
+}
+
+.autoCompleteListItemCity {
+  width: 40%;
 }

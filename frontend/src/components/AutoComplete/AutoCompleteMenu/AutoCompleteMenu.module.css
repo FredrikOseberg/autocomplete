@@ -1,0 +1,16 @@
+.autoCompleteMenu {
+  position: absolute;
+  width: 400px;
+  background-color: #fff;
+  border-radius: 3px;
+  left: 0;
+}
+
+.autoCompleteList {
+  list-style-type: none;
+  padding: 0.5rem 1rem;
+  width: 400px;
+  background-color: #fff;
+  border-radius: 3px;
+  margin: 0;
+}

@@ -1,0 +1,21 @@
+.autocompleteError {
+  background-color: #fff;
+  padding: 1rem;
+  color: #1d1d1d;
+  font-weight: bold;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.autoCompleteErrorButton {
+  width: 100px;
+  margin-top: 10px;
+  background-color: rgb(56, 56, 249);
+  color: #fff;
+  border: none;
+  text-align: center;
+  padding: 0.5rem 0;
+  font-weight: bold;
+  border-radius: 3px;
+}

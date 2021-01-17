@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import styles from "./AutoCompleteMenu.module.css";
 
@@ -35,6 +35,7 @@ const AutoCompleteMenu: React.FC<IAutoCompleteMenuProps> = ({
   setShowListBox,
 }) => {
   const ref = useRef<HTMLLIElement>(null);
+  const [listItems, setListItems] = useState<JSX.Element[]>();
 
   useEffect(() => {
     window.addEventListener("keydown", keyboardEvent);
@@ -45,11 +46,19 @@ const AutoCompleteMenu: React.FC<IAutoCompleteMenuProps> = ({
   }, []);
 
   useEffect(() => {
+    setListItems(addRef(formatter(data)));
+  }, [data]);
+
+  useEffect(() => {
     if (activeItemIndex === null) {
       setActiveDescendantId("");
       return setParentFocus();
     }
-    setActiveDescendantId(ref?.current?.id || "");
+
+    Promise.resolve(setListItems(addRef(formatter(data)))).then(() => {
+      setActiveDescendantId(ref?.current?.id || "");
+      ref?.current?.focus();
+    });
   }, [activeItemIndex]);
 
   const keyboardEvent = (e: KeyboardEvent) => {
@@ -86,8 +95,6 @@ const AutoCompleteMenu: React.FC<IAutoCompleteMenuProps> = ({
       }
       return null;
     });
-
-    ref?.current?.focus();
   };
 
   const handleArrowDown = () => {
@@ -96,6 +103,7 @@ const AutoCompleteMenu: React.FC<IAutoCompleteMenuProps> = ({
       currentData = data;
       return data;
     });
+
     setActiveItemIndex((prev) => {
       if (typeof prev === "number") {
         if (prev < currentData.length - 1) {
@@ -105,8 +113,6 @@ const AutoCompleteMenu: React.FC<IAutoCompleteMenuProps> = ({
       }
       return 0;
     });
-
-    ref?.current?.focus();
   };
 
   const handleEnter = () => {
@@ -124,6 +130,9 @@ const AutoCompleteMenu: React.FC<IAutoCompleteMenuProps> = ({
 
   const handleEscape = () => {
     setShowListBox((show) => {
+      setActiveItemIndex(null);
+      setParentFocus();
+
       if (!show) {
         setSearchParam("");
         return show;
@@ -133,10 +142,6 @@ const AutoCompleteMenu: React.FC<IAutoCompleteMenuProps> = ({
 
       return show;
     });
-  };
-
-  const renderAutoCompleteList = () => {
-    return addRef(formatter(data.filter((data) => data.street)));
   };
 
   const onListItemClick = (index: number) => {
@@ -175,7 +180,7 @@ const AutoCompleteMenu: React.FC<IAutoCompleteMenuProps> = ({
           aria-labelledby={labelId}
           className={styles.autoCompleteList}
         >
-          {renderAutoCompleteList()}
+          {listItems}
         </ul>
       ) : null}
     </div>

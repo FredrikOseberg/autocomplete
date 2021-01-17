@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 
 import AutoCompleteMenu from "./AutoCompleteMenu/AutoCompleteMenu";
+import AutoCompleteError from "../AutoCompleteError/AutoCompleteError";
 
 import styles from "./AutoComplete.module.css";
 
@@ -8,6 +9,7 @@ interface IAutoCompleteProps {
   getData: (searchParam: string) => Promise<Response>;
   formatter: (data: any) => JSX.Element[];
   validator: (searchParam: string) => Boolean;
+  filter: (data: any) => any;
   placeholder?: string;
   id: string;
   label: string;
@@ -19,6 +21,7 @@ const AutoComplete: React.FC<IAutoCompleteProps> = ({
   validator,
   placeholder = "Søk etter addresser",
   id,
+  filter,
   label,
 }) => {
   const [data, setData] = useState<any>([]);
@@ -26,6 +29,7 @@ const AutoComplete: React.FC<IAutoCompleteProps> = ({
   const [activeDescendantId, setActiveDescendantId] = useState("");
   const [activeItemIndex, setActiveItemIndex] = useState<number | null>(null);
   const [searchParam, setSearchParam] = useState("");
+  const [error, setError] = useState("");
   const ref = useRef<HTMLInputElement>(null);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,25 +38,30 @@ const AutoComplete: React.FC<IAutoCompleteProps> = ({
 
     const validInput = validator(value);
     if (validInput) {
-      return getData(value).then(handleResponse).then(handleData);
+      return makeRequest(value);
     }
     setShowListBox(false);
     setData([]);
+  };
+
+  const makeRequest = (value: string) => {
+    setError("");
+    getData(value).then(handleResponse).then(handleData);
   };
 
   const handleResponse = (res: Response) => {
     if (res.status === 200) {
       return res.json();
     }
-    // Set an error
-    console.log("SETTING AN ERROR HERE");
+    console.log("Setting error");
+    setError("Beklager, forespørselen feilet.");
     return [];
   };
 
   const handleData = (data: any) => {
     if (data.length > 0) {
       setShowListBox(true);
-      return setData(data);
+      return setData(filter([...data]));
     }
     setShowListBox(false);
   };
@@ -82,20 +91,26 @@ const AutoComplete: React.FC<IAutoCompleteProps> = ({
         aria-activedescendant={activeDescendantId}
         ref={ref}
       />
+      {error ? (
+        <AutoCompleteError
+          message={error}
+          onClick={() => makeRequest(searchParam)}
+        />
+      ) : null}
       <AutoCompleteMenu
         data={data}
         formatter={formatter}
         listBoxId={listBoxId}
         comboBoxId={comboBoxId}
         labelId={labelId}
-        setActiveDescendantId={setActiveDescendantId}
-        setParentFocus={setParentFocus}
         activeItemIndex={activeItemIndex}
-        setActiveItemIndex={setActiveItemIndex}
         showListBox={showListBox}
         setData={setData}
+        setParentFocus={setParentFocus}
         setSearchParam={setSearchParam}
         setShowListBox={setShowListBox}
+        setActiveItemIndex={setActiveItemIndex}
+        setActiveDescendantId={setActiveDescendantId}
       />
     </div>
   );

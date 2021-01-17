@@ -1,4 +1,4 @@
-import { IAddress } from "./types/address";
+import { IAddress } from "../common/types";
 
 export const search = (searchParam: string, trieSearch: any): IAddress[] => {
   const results = trieSearch.get(searchParam) as IAddress[];

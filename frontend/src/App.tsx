@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { IAddress } from "../../common/types";
 
 import AutoComplete from "./components/AutoComplete/AutoComplete";
 import styles from "./App.module.css";
@@ -7,17 +8,10 @@ const getAddresses = (searchParam: string) => {
   return fetch(`http://localhost:8000/search/${searchParam}`);
 };
 
-export interface IAddress {
-  postNumber: string;
-  city: string;
-  street: string;
-  typeCode: number;
-  type: string;
-  district: string;
-  municipalityNumber: string;
-  municipality: string;
-  county: string;
-}
+const filter = (data: any) => {
+  const addresses = data as IAddress[];
+  return addresses.filter((address) => address.street);
+};
 
 function App() {
   const formatter = (data: any) => {
@@ -30,7 +24,8 @@ function App() {
           role="option"
           key={`${address.street}-${address.postNumber}`}
           id={`address-autocomplete-li-${index + 1}`}
-          tabIndex={index + 1}
+          tabIndex={1}
+          onFocus={() => console.log("FOCUSED", index)}
         >
           <span className={styles.autoCompleteListItemStreet}>
             {address.street}
@@ -58,6 +53,7 @@ function App() {
           getData={getAddresses}
           formatter={formatter}
           validator={validator}
+          filter={filter}
           id="address-autocomplete"
           label="Addresse søk"
         />

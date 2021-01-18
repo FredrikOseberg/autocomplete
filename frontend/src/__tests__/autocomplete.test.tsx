@@ -1,9 +1,10 @@
-import React from "react";
-import userEvent from "@testing-library/user-event";
-import { cleanup, screen, waitFor, render, act } from "@testing-library/react";
+import { cleanup, screen, waitFor, act } from "@testing-library/react";
 
-import AutoComplete from "../components/AutoComplete/AutoComplete";
-import { getDefaultProps } from "../testUtils";
+import {
+  getFieldReference,
+  setInputFieldValue,
+  setupAutocomplete,
+} from "../testUtils";
 
 beforeEach(() => {
   jest.spyOn(window, "fetch").mockImplementation(
@@ -27,29 +28,6 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
 });
-
-const setupAutocomplete = () => {
-  return render(<AutoComplete {...getDefaultProps()} />);
-};
-
-const getFieldReference = () => {
-  return screen.getByLabelText("Addresse søk");
-};
-
-const getChangeEvent = () => {
-  return new Event("change", {
-    bubbles: true,
-  });
-};
-
-const setInputFieldValue = (
-  inputField: HTMLElement | null | undefined,
-  value: string
-) => {
-  inputField?.setAttribute("value", value);
-  const event = getChangeEvent();
-  inputField?.dispatchEvent(event);
-};
 
 test("It renders the autoComplete textfield", () => {
   setupAutocomplete();
@@ -166,7 +144,7 @@ test("It navigates the elements when pressing keydown and the combobox is open",
   // Test focus here
 });
 
-test("It stops changing the li focus based on the length of the dataset", async () => {
+test("It stops changing the activedescendant based on the length of the dataset", async () => {
   setupAutocomplete();
 
   const inputField = getFieldReference();
@@ -196,6 +174,50 @@ test("It stops changing the li focus based on the length of the dataset", async 
       "aria-activedescendant",
       "address-autocomplete-li-3"
     )
+  );
+});
+
+test("It unsets the activedescendant when pressing arrowUp on when the first element is focused", async () => {
+  setupAutocomplete();
+
+  const inputField = getFieldReference();
+
+  act(() => {
+    setInputFieldValue(inputField, "Herr");
+  });
+
+  await waitFor(() => expect(global.fetch).toBeCalledTimes(1));
+
+  const comboBox = screen.getByRole("combobox");
+  expect(comboBox).toHaveAttribute("aria-expanded", "true");
+
+  act(() => {
+    const keyboardEvent = new KeyboardEvent("keydown", {
+      key: "ArrowDown",
+      bubbles: true,
+    });
+
+    global.dispatchEvent(keyboardEvent);
+  });
+
+  await waitFor(() =>
+    expect(inputField).toHaveAttribute(
+      "aria-activedescendant",
+      "address-autocomplete-li-1"
+    )
+  );
+
+  act(() => {
+    const keyboardEvent = new KeyboardEvent("keydown", {
+      key: "ArrowUp",
+      bubbles: true,
+    });
+
+    global.dispatchEvent(keyboardEvent);
+  });
+
+  await waitFor(() =>
+    expect(inputField).toHaveAttribute("aria-activedescendant", "")
   );
 });
 

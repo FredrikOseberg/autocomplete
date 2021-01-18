@@ -1,9 +1,10 @@
 import React from "react";
+import { render, screen } from "@testing-library/react";
+import AutoComplete from "./components/AutoComplete/AutoComplete";
 
 const mockFormatter = (data: any) => {
   return data.map((point: any, index: number) => {
     const { street, postNumber, city } = point;
-
     return (
       <li
         key={`${street}-${postNumber}`}
@@ -37,4 +38,27 @@ export const getDefaultProps = () => {
     id: "address-autocomplete",
     label: "Addresse søk",
   };
+};
+
+export const setupAutocomplete = () => {
+  return render(<AutoComplete {...getDefaultProps()} />);
+};
+
+export const getFieldReference = () => {
+  return screen.getByLabelText("Addresse søk");
+};
+
+export const getChangeEvent = () => {
+  return new Event("change", {
+    bubbles: true,
+  });
+};
+
+export const setInputFieldValue = (
+  inputField: HTMLElement | null | undefined,
+  value: string
+) => {
+  inputField?.setAttribute("value", value);
+  const event = getChangeEvent();
+  inputField?.dispatchEvent(event);
 };

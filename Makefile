@@ -10,4 +10,4 @@ install-frontend:
 	cd frontend && npm install
 
 install-backend: 
-	cd backend && install backend;
+	cd backend && npm install;

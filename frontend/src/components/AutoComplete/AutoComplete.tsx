@@ -1,7 +1,7 @@
 import React, { useState, useRef, useLayoutEffect } from "react";
 
 import AutoCompleteMenu from "./AutoCompleteMenu/AutoCompleteMenu";
-import AutoCompleteError from "../AutoCompleteError/AutoCompleteError";
+import AutoCompleteError from "./AutoCompleteError/AutoCompleteError";
 
 import styles from "./AutoComplete.module.css";
 

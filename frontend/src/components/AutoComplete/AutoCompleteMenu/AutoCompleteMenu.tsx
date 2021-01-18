@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
+import { ARROW_DOWN, ARROW_UP, ENTER, ESC } from "../../../constants";
 
 import styles from "./AutoCompleteMenu.module.css";
 
@@ -35,7 +36,18 @@ const AutoCompleteMenu: React.FC<IAutoCompleteMenuProps> = ({
   setShowListBox,
 }) => {
   const ref = useRef<HTMLLIElement>(null);
+  /* Refs used to keep update the state fresh. One of the drawbacks
+  of using hooks is that the javscript concept of closure will
+  close over the state value when accessed in a callback, for example
+  events. Reference: https://github.com/reactjs/rfcs/blob/master/text/0068-react-hooks.md  */
+  let dataRef = useRef<any[]>([]);
+  let showListBoxRef = useRef<boolean>(false);
+  let activeItemIndexRef = useRef<number | null>(null);
   const [listItems, setListItems] = useState<JSX.Element[]>();
+
+  useEffect(() => {
+    showListBoxRef.current = showListBox;
+  }, [showListBox]);
 
   useEffect(() => {
     window.addEventListener("keydown", keyboardEvent);
@@ -46,28 +58,29 @@ const AutoCompleteMenu: React.FC<IAutoCompleteMenuProps> = ({
   }, []);
 
   useEffect(() => {
-    setListItems(addRef(formatter(data)));
+    dataRef.current = data;
+    processData();
   }, [data]);
 
   useEffect(() => {
+    activeItemIndexRef.current = activeItemIndex;
     if (activeItemIndex === null) {
       setActiveDescendantId("");
       return setParentFocus();
     }
 
-    Promise.resolve(setListItems(addRef(formatter(data)))).then(() => {
+    Promise.resolve(processData()).then(() => {
       setActiveDescendantId(ref?.current?.id || "");
       ref?.current?.focus();
     });
   }, [activeItemIndex]);
 
+  const processData = () => {
+    return setListItems(addRef(formatter(data)));
+  };
+
   const keyboardEvent = (e: KeyboardEvent) => {
     e.stopImmediatePropagation();
-
-    const ARROW_UP = "ArrowUp";
-    const ARROW_DOWN = "ArrowDown";
-    const ENTER = "Enter";
-    const ESC = "Escape";
 
     if (e.key === ARROW_UP) {
       handleArrowUp();
@@ -89,7 +102,8 @@ const AutoCompleteMenu: React.FC<IAutoCompleteMenuProps> = ({
   const handleArrowUp = () => {
     setActiveItemIndex((prev) => {
       if (typeof prev === "number") {
-        if (prev > 0) {
+        const notFirstElement = prev > 0;
+        if (notFirstElement) {
           return prev - 1;
         }
       }
@@ -98,15 +112,12 @@ const AutoCompleteMenu: React.FC<IAutoCompleteMenuProps> = ({
   };
 
   const handleArrowDown = () => {
-    let currentData;
-    setData((data: any[]) => {
-      currentData = data;
-      return data;
-    });
+    const currentData = dataRef.current;
 
     setActiveItemIndex((prev) => {
       if (typeof prev === "number") {
-        if (prev < currentData.length - 1) {
+        const doesNotExceedDataSetLength = prev < currentData.length - 1;
+        if (doesNotExceedDataSetLength) {
           return prev + 1;
         }
         return prev;
@@ -116,32 +127,28 @@ const AutoCompleteMenu: React.FC<IAutoCompleteMenuProps> = ({
   };
 
   const handleEnter = () => {
-    setShowListBox((show) => {
-      if (!show) return show;
-
-      const firstChild = ref?.current?.firstChild;
-      setSearchParam(firstChild?.textContent || "");
-      setShowListBox(false);
-      setActiveItemIndex(null);
-
-      return show;
-    });
+    const show = showListBoxRef.current;
+    const activeItemIndex = activeItemIndexRef.current;
+    if (!show) return;
+    if (activeItemIndex === null) return;
+    const firstChild = ref?.current?.firstChild;
+    setSearchParam(firstChild?.textContent || "");
+    setShowListBox(false);
+    setActiveItemIndex(null);
   };
 
   const handleEscape = () => {
-    setShowListBox((show) => {
-      setActiveItemIndex(null);
-      setParentFocus();
+    const show = showListBoxRef.current;
 
-      if (!show) {
-        setSearchParam("");
-        return show;
-      }
+    setActiveItemIndex(null);
+    setParentFocus();
 
-      setShowListBox(false);
-
+    if (!show) {
+      setSearchParam("");
       return show;
-    });
+    }
+
+    setShowListBox(false);
   };
 
   const onListItemClick = (index: number) => {

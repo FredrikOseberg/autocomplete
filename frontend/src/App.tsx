@@ -21,11 +21,11 @@ function App() {
       return (
         <li
           className={styles.autoCompleteListItem}
+          /* eslint-disable-next-line */
           role="option"
           key={`${address.street}-${address.postNumber}`}
           id={`address-autocomplete-li-${index + 1}`}
           tabIndex={1}
-          onFocus={() => console.log("FOCUSED", index)}
         >
           <span className={styles.autoCompleteListItemStreet}>
             {address.street}

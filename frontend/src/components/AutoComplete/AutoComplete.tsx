@@ -76,7 +76,9 @@ const AutoComplete: React.FC<IAutoCompleteProps> = ({
 
   return (
     <div className={styles.autoCompleteContainer}>
-      <label id={labelId}>{label}</label>
+      <label className={styles.label} id={labelId}>
+        {label}
+      </label>
       <input
         value={searchParam}
         onChange={onChange}

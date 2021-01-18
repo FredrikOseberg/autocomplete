@@ -1,0 +1,13 @@
+FROM node:12-buster
+
+WORKDIR /app
+COPY ./backend /app/
+COPY /common/ ../common
+
+
+RUN npm install
+RUN npm run tsc
+
+EXPOSE 8000
+
+CMD ["node", "./build/index.js"]

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useLayoutEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 import AutoCompleteMenu from "./AutoCompleteMenu/AutoCompleteMenu";
 import AutoCompleteError from "./AutoCompleteError/AutoCompleteError";
@@ -40,7 +40,7 @@ const AutoComplete: React.FC<IAutoCompleteProps> = ({
     searching: false,
   });
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const difference = debouncer.currentSearchParam !== searchParam;
     const notEmpty = searchParam !== "";
 

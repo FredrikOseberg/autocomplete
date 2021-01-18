@@ -1,6 +1,6 @@
-.PHONY: start-server start-frontend install-frontend install-backend
+.PHONY: start-backend start-frontend install-frontend install-backend
 
-start-server:
+start-backend:
 	cd backend && npm start
 
 start-frontend: 

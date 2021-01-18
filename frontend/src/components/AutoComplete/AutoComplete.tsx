@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useLayoutEffect } from "react";
 
 import AutoCompleteMenu from "./AutoCompleteMenu/AutoCompleteMenu";
 import AutoCompleteError from "../AutoCompleteError/AutoCompleteError";
@@ -13,6 +13,11 @@ interface IAutoCompleteProps {
   placeholder?: string;
   id: string;
   label: string;
+}
+
+interface IDebouncer {
+  currentSearchParam: string;
+  searching: boolean;
 }
 
 const AutoComplete: React.FC<IAutoCompleteProps> = ({
@@ -30,6 +35,20 @@ const AutoComplete: React.FC<IAutoCompleteProps> = ({
   const [activeItemIndex, setActiveItemIndex] = useState<number | null>(null);
   const [searchParam, setSearchParam] = useState("");
   const [error, setError] = useState("");
+  const [debouncer, setDebouncer] = useState<IDebouncer>({
+    currentSearchParam: "",
+    searching: false,
+  });
+
+  useLayoutEffect(() => {
+    const difference = debouncer.currentSearchParam !== searchParam;
+    const notEmpty = searchParam !== "";
+
+    if (difference && notEmpty) {
+      makeRequest(searchParam);
+    }
+  }, [debouncer.searching, debouncer.currentSearchParam]);
+
   const ref = useRef<HTMLInputElement>(null);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,7 +56,8 @@ const AutoComplete: React.FC<IAutoCompleteProps> = ({
     setSearchParam(value);
 
     const validInput = validator(value);
-    if (validInput) {
+    if (validInput && !debouncer.searching) {
+      setDebouncer({ currentSearchParam: value, searching: true });
       return makeRequest(value);
     }
     setShowListBox(false);
@@ -46,10 +66,17 @@ const AutoComplete: React.FC<IAutoCompleteProps> = ({
 
   const makeRequest = (value: string) => {
     setError("");
-    getData(value).then(handleResponse).then(handleData);
+    getData(value)
+      .then(handleResponse)
+      .then(handleData)
+      .catch(() => {
+        setDebouncer((prevValues) => ({ ...prevValues, searching: false }));
+      });
   };
 
   const handleResponse = (res: Response) => {
+    setDebouncer((prevValues) => ({ ...prevValues, searching: false }));
+
     if (res.status === 200) {
       return res.json();
     }

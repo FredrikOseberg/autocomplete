@@ -5,7 +5,7 @@ import Triesearch from "trie-search";
 import cors from "cors";
 
 import addresses from "./adresses.json";
-import { search } from "./utils";
+import { search, simpleLogger } from "./utils";
 import { BAD_REQUEST, OK, PORT } from "./constants";
 
 const app = express();
@@ -19,6 +19,7 @@ trieSearch.addAll(addresses);
 app.use(cors());
 
 app.get("/search/:searchParam", (req, res) => {
+  simpleLogger(req);
   const { searchParam } = req.params;
 
   const invalidRequest = searchParam && searchParam.length < 3;

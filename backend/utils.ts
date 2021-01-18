@@ -1,3 +1,4 @@
+import express from "express";
 import { IAddress } from "../common/types";
 
 export const search = (searchParam: string, trieSearch: any): IAddress[] => {
@@ -8,4 +9,15 @@ export const search = (searchParam: string, trieSearch: any): IAddress[] => {
   }
 
   return results;
+};
+
+export const simpleLogger = (req: express.Request) => {
+  const { origin, useragent, host } = req.headers;
+  const { method, statusCode } = req;
+
+  const date = new Date();
+
+  console.log(
+    `[REQ RECEIVED: ${date.getHours()}:${date.getMinutes()}]  method=${method} origin=${origin} user-agent=${useragent} host=${host}`
+  );
 };

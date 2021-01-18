@@ -15,7 +15,6 @@ interface IAutoCompleteMenuProps {
   setParentFocus: () => void;
   setActiveItemIndex: React.Dispatch<React.SetStateAction<number | null>>;
   setActiveDescendantId: React.Dispatch<React.SetStateAction<string>>;
-  setData: React.Dispatch<React.SetStateAction<any>>;
   setSearchParam: React.Dispatch<React.SetStateAction<string>>;
   setShowListBox: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -31,7 +30,6 @@ const AutoCompleteMenu: React.FC<IAutoCompleteMenuProps> = ({
   setActiveDescendantId,
   setParentFocus,
   setActiveItemIndex,
-  setData,
   setSearchParam,
   setShowListBox,
 }) => {

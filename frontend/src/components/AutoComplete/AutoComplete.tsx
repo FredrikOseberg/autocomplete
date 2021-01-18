@@ -134,7 +134,6 @@ const AutoComplete: React.FC<IAutoCompleteProps> = ({
         labelId={labelId}
         activeItemIndex={activeItemIndex}
         showListBox={showListBox}
-        setData={setData}
         setParentFocus={setParentFocus}
         setSearchParam={setSearchParam}
         setShowListBox={setShowListBox}

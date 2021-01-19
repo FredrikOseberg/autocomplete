@@ -76,8 +76,6 @@ const AutoCompleteMenu: React.FC<IAutoCompleteMenuProps> = ({
     });
   }, [activeItemIndex]);
 
-  console.log(activeItemIndex);
-
   const processData = () => {
     return setListItems(addRef(formatter(data)));
   };

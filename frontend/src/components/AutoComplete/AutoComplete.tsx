@@ -80,13 +80,12 @@ const AutoComplete: React.FC<IAutoCompleteProps> = ({
     if (res.status === 200) {
       return res.json();
     }
-    console.log("Setting error");
     setError("Beklager, forespørselen feilet.");
     return [];
   };
 
   const handleData = (data: any) => {
-    if (data.length > 0) {
+    if (filter(data).length > 0) {
       setShowListBox(true);
       return setData(filter([...data]));
     }

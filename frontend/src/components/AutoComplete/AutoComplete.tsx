@@ -97,8 +97,11 @@ const AutoComplete: React.FC<IAutoCompleteProps> = ({
   };
 
   const onFocus = () => {
-    setShowListBox(false);
-    setActiveItemIndex(null);
+    const lastItem = activeItemIndex === data.length - 1;
+    if (lastItem) {
+      setShowListBox(false);
+      setActiveItemIndex(null);
+    }
   };
 
   const listBoxId = `${id}-listbox`;
@@ -124,6 +127,7 @@ const AutoComplete: React.FC<IAutoCompleteProps> = ({
         aria-activedescendant={activeDescendantId}
         ref={ref}
         onFocus={onFocus}
+        autoComplete="off"
       />
       {error ? (
         <AutoCompleteError

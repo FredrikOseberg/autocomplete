@@ -56,10 +56,13 @@ const AutoComplete: React.FC<IAutoCompleteProps> = ({
     setSearchParam(value);
 
     const validInput = validator(value);
-    if (validInput && !debouncer.searching) {
+
+    if (debouncer.searching) return;
+    if (validInput) {
       setDebouncer({ currentSearchParam: value, searching: true });
       return makeRequest(value);
     }
+
     setShowListBox(false);
     setData([]);
   };

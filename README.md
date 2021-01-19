@@ -23,7 +23,7 @@ You can use the following keys to navigate:
 
 #### Docker-compose
 
-The easiest way to run the project is to use docker-compose:
+The easiest way to run the project is to use docker-compose. Tests are automatically run when building:
 
 ```
 docker-compose up --build
@@ -50,6 +50,12 @@ make install-backend
 make install-backend
 make start-backend
 make start-frontend
+```
+
+Run tests:
+
+```
+make test-frontend
 ```
 
 ### Manually

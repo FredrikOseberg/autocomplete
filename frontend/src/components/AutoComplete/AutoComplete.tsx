@@ -97,6 +97,11 @@ const AutoComplete: React.FC<IAutoCompleteProps> = ({
     ref?.current?.focus();
   };
 
+  const onFocus = () => {
+    setShowListBox(false);
+    setActiveItemIndex(null);
+  };
+
   const listBoxId = `${id}-listbox`;
   const comboBoxId = `${id}-combobox`;
   const labelId = `${id}-label`;
@@ -119,6 +124,7 @@ const AutoComplete: React.FC<IAutoCompleteProps> = ({
         aria-labelledby={labelId}
         aria-activedescendant={activeDescendantId}
         ref={ref}
+        onFocus={onFocus}
       />
       {error ? (
         <AutoCompleteError

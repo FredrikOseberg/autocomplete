@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
-import { ARROW_DOWN, ARROW_UP, ENTER, ESC } from "../../../constants";
+import { ARROW_DOWN, ARROW_UP, ENTER, ESC, TAB } from "../../../constants";
 
 import styles from "./AutoCompleteMenu.module.css";
 
@@ -62,6 +62,9 @@ const AutoCompleteMenu: React.FC<IAutoCompleteMenuProps> = ({
 
   useEffect(() => {
     activeItemIndexRef.current = activeItemIndex;
+  }, [activeItemIndex]);
+
+  useEffect(() => {
     if (activeItemIndex === null) {
       setActiveDescendantId("");
       return setParentFocus();
@@ -72,6 +75,8 @@ const AutoCompleteMenu: React.FC<IAutoCompleteMenuProps> = ({
       ref?.current?.focus();
     });
   }, [activeItemIndex]);
+
+  console.log(activeItemIndex);
 
   const processData = () => {
     return setListItems(addRef(formatter(data)));
@@ -88,6 +93,14 @@ const AutoCompleteMenu: React.FC<IAutoCompleteMenuProps> = ({
       handleArrowDown();
     }
 
+    if (e.key === TAB && !e.shiftKey) {
+      handleTab();
+    }
+
+    if (e.key === TAB && e.shiftKey) {
+      handleTabAndShift();
+    }
+
     if (e.key === ENTER) {
       handleEnter();
     }
@@ -97,7 +110,31 @@ const AutoCompleteMenu: React.FC<IAutoCompleteMenuProps> = ({
     }
   };
 
+  const handleTabAndShift = () => {
+    const currentData = dataRef.current;
+    if (ref?.current) {
+      return moveActiveItemIndexUp();
+    }
+    setActiveItemIndex(currentData.length);
+  };
+
   const handleArrowUp = () => {
+    moveActiveItemIndexUp();
+  };
+
+  const handleArrowDown = () => {
+    moveActiveItemIndexDown();
+  };
+
+  const handleTab = () => {
+    const activeItemIndex = activeItemIndexRef.current;
+    const notNull = activeItemIndex !== null;
+    if (notNull) {
+      moveActiveItemIndexDown();
+    }
+  };
+
+  const moveActiveItemIndexUp = () => {
     setActiveItemIndex((prev) => {
       if (typeof prev === "number") {
         const notFirstElement = prev > 0;
@@ -109,7 +146,7 @@ const AutoCompleteMenu: React.FC<IAutoCompleteMenuProps> = ({
     });
   };
 
-  const handleArrowDown = () => {
+  const moveActiveItemIndexDown = () => {
     const currentData = dataRef.current;
 
     setActiveItemIndex((prev) => {
